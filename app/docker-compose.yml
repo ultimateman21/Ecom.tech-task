@@ -1,0 +1,42 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web UI
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: "00000000"
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      echo 'Waiting for MinIO...' &&
+      sleep 5 &&
+      mc alias set local http://minio:9000 minio 00000000 &&
+      mc mb -p local/input || true &&
+      mc mb -p local/output || true &&
+      echo 'Buckets created'
+      "
+
+  etl-python:
+    build: .
+    container_name: etl-python
+    depends_on:
+      - minio
+    volumes:
+      - ./etl:/app/etl
+      - ./data:/app/data
+    working_dir: /app
+    command: tail -f /dev/null
+
+volumes:
+  minio_data:
