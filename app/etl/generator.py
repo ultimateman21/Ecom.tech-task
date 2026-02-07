@@ -9,6 +9,9 @@ DEFAULT_SEED = 42
 NUM_USERS = 100
 NUM_STORES = 20
 NUM_ORDERS = 1000
+
+# эти числа превращаются в Decimal путём изменения scale,
+# то есть 5000 может стать 50.00 если выпадет scale 2
 AMOUNT_MIN = 5000
 AMOUNT_MAX = 500000
 
@@ -106,3 +109,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
