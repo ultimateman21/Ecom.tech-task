@@ -8,8 +8,10 @@ S3_OPTIONS = {'key': 'minio',
 
 def main():
     df = pd.read_parquet('s3://output/top_stores.parquet', engine='pyarrow', storage_options=S3_OPTIONS)
+    df.to_parquet('data/top_stores.parquet', engine="pyarrow", index=False)
     print(f'{df}\n\nData types:\n{df.dtypes}')
 
 
 if __name__ == "__main__":
     main()
+
